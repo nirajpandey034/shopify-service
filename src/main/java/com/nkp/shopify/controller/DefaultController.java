@@ -10,6 +10,6 @@ public class DefaultController {
 
     @GetMapping("/default")
     public String defaultRoute() {
-        return "Oops! I think you have entered wrong URL, Please try again with correct one";
+        return "Some error occurred, Please check URL";
     }
 }
