@@ -1,19 +1,25 @@
 package com.nkp.shopify.service;
 
 import com.nkp.shopify.entities.UserEntity;
-import com.nkp.shopify.entities.UserPrinciple;
 import com.nkp.shopify.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
-public class UserService implements UserDetailsService {
+public class UserService {
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    AuthenticationManager authenticationManager;
+
+    @Autowired
+    JWTService jwtService;
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
 
@@ -26,13 +32,14 @@ public class UserService implements UserDetailsService {
         }
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findByEmail(username);
-        if (user == null) {
-            System.out.println("User Not Found");
-            throw new UsernameNotFoundException("User Not Found");
-        }
-        return new UserPrinciple(user);
+    public Map<String, Object> loginUser(UserEntity userEntity) throws Exception {
+        Map<String, Object> obj = new HashMap<>();
+        String token = jwtService.generateToken(userEntity.getEmail());
+        Object id = userRepository.findByEmail(userEntity.getEmail()).getId();
+
+        obj.put("token", token);
+        obj.put("id", id);
+
+        return obj;
     }
 }

@@ -22,7 +22,7 @@ public class ProductService {
     }
 
     public ProductEntity getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+        return productRepository.findById(id).orElse(new ProductEntity("No Product", "", 0));
     }
 
     public ProductEntity saveProduct(ProductEntity product) {
